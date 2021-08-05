@@ -1,41 +1,57 @@
-import { Component } from 'react';
-import Giphy from './Component/Giphy';
-
 import './App.css';
+import {Component} from 'react'
 
-class App extends Component {
-  constructor(props){
+
+class App extends Component {  
+  constructor (props) {
     super(props)
     this.state = {
-      baseURL: 'http://api.giphy.com/v1/gifs/search',
-      api_key: 'apikey=' + process.env.REACT_APP_APIKEY,
-      query: '&q=',
-      giph: '',
-      limit: '&limit-20',
-      searchUrl: '',
+      
     }
   }
-
-  handleSubmit = (event)=>{
+   
+  handleSubmit = (event)=> {
     event.preventDefault()
-    const url = `http://api.giphy.com/v1/gifs/search&q=${process.env.REACT_APP_APIKEY}&t=${event.target}`
-    fetch(url)
-      .then(response=> response.json())
-      .then(data=> {
-        this.setState({
-          movie: data
-        })
-      })
-      .catch((err) => console.log(err))
-    }
 
-render(){
-  return (
-    <div className="App">
-      <Giphy/>
-    </div>
-  );
-}
+    const url = `https://api.giphy.com/v1/gifs/search?api_key=${process.env.REACT_APP_APIKEY}&q=${event.target.gifTitle.value}&offset=0`
+
+
+    fetch(url)
+    .then(response =>{
+      return response.json()
+    }).then(json => 
+      //console.log(json.data))
+      this.setState({
+      gif: json
+    }),
+    err => console.log(err))
+  }
+  render(){
+    return (
+      <div className='App'>
+        <form onSubmit={this.handleSubmit}>
+          <input
+            id='gifTitle'
+            type='text'
+          />
+          <input
+            type='submit'
+            value='Search'
+          />
+        </form>
+        <div>
+            {this.state.gif?.data.map(img=>{
+              // need return() to render results
+                return(
+                    <div>
+                        <img src={img.images.downsized.url} alt="Alt text"></img>
+                    </div>
+                )
+            })}
+        </div>        
+      </div>
+    );
+  };
 }
 
 export default App;
